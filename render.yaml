@@ -8,7 +8,7 @@ services:
     dockerfilePath: ./student/Dockerfile
     envVars:
       - key: PORT
-        value: 8080
+        value: "8080"
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: student-db
@@ -40,7 +40,7 @@ services:
         fromService:
           type: web
           name: student-backend
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
 
 # 3. PostgreSQL Database
 databases:
