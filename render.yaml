@@ -26,7 +26,6 @@ services:
   - type: web
     name: student-crud-frontend
     runtime: static
-    plan: free
     rootDir: student-frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
