@@ -1,4 +1,27 @@
 services:
+  # 1. Spring Boot Backend Web Service
+  - type: web
+    name: student-backend
+    runtime: docker
+    dockerContext: ./student
+    dockerfilePath: ./student/Dockerfile
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: student-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: student-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: student-db
+          property: password
+
+  # 2. Vite React Frontend Static Site
   - type: web
     name: student-crud-frontend
     runtime: static
@@ -13,4 +36,13 @@ services:
       - key: NODE_VERSION
         value: "22"
       - key: VITE_API_BASE_URL
-        value: "" # Set your deployed Spring Boot URL here (e.g. https://your-backend.onrender.com)
+        fromService:
+          type: web
+          name: student-backend
+          property: host
+
+# 3. PostgreSQL Database
+databases:
+  - name: student-db
+    databaseName: db_student
+    user: postgres
