@@ -1,5 +1,12 @@
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
-const API_BASE = `${BASE_URL}/infante/students`;
+const rawBase = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+
+// If VITE_API_BASE_URL is provided without a protocol (e.g. "my-service.onrender.com"), prefix with https://
+const formattedBase =
+  rawBase && !rawBase.startsWith('http://') && !rawBase.startsWith('https://')
+    ? `https://${rawBase}`
+    : rawBase;
+
+const API_BASE = formattedBase ? `${formattedBase}/infante/students` : '/infante/students';
 
 export const studentService = {
   // Fetch all students
