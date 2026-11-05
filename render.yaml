@@ -9,6 +9,8 @@ services:
     envVars:
       - key: PORT
         value: "8080"
+      - key: DB_SSLMODE
+        value: "require"
       - key: DB_HOST
         fromDatabase:
           name: student-db
