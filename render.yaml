@@ -1,16 +1,12 @@
 services:
-  # 1. Spring Boot Backend Web Service
+  # ── Backend (Docker) ─────────────────────────────────────────────────────────
   - type: web
     name: student-backend
-    runtime: docker
+    env: docker
     plan: free
-    dockerContext: ./student
     dockerfilePath: ./student/Dockerfile
+    dockerContext: ./student
     envVars:
-      - key: PORT
-        value: "8080"
-      - key: DB_SSLMODE
-        value: "require"
       - key: DB_HOST
         fromDatabase:
           name: student-db
@@ -23,38 +19,39 @@ services:
         fromDatabase:
           name: student-db
           property: database
-      - key: DB_USER
+      - key: DATABASE_USERNAME
         fromDatabase:
           name: student-db
           property: user
-      - key: DB_PASSWORD
+      - key: DATABASE_PASSWORD
         fromDatabase:
           name: student-db
           property: password
+      - key: CORS_ALLOWED_ORIGINS
+        value: "*"
+      - key: DB_SSL_MODE
+        value: require
+      - key: PORT
+        value: "8080"
 
-  # 2. Vite React Frontend Static Site
+  # ── Frontend (Static) ────────────────────────────────────────────────────────
   - type: web
-    name: student-crud-frontend
-    runtime: static
-    rootDir: student-frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    name: student-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
-      - key: NODE_VERSION
-        value: "22"
       - key: VITE_API_BASE_URL
         fromService:
           type: web
           name: student-backend
-          envVarKey: RENDER_EXTERNAL_URL
+          property: host
 
-# 3. PostgreSQL Database
 databases:
   - name: student-db
-    databaseName: db_student
-    user: student_user
     plan: free
+    databaseName: db_student
